@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements Opciones.OnFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fm = getSupportFragmentManager();
     }
 
     @Override
