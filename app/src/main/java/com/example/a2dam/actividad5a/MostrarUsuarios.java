@@ -4,23 +4,32 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+
+import com.example.a2dam.actividad5a.model.Usuario;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Opciones.OnFragmentInteractionListener} interface
+ * {@link MostrarUsuarios.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Opciones#newInstance} factory method to
+ * Use the {@link MostrarUsuarios#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Opciones extends Fragment implements View.OnClickListener{
+public class MostrarUsuarios extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,13 +39,14 @@ public class Opciones extends Fragment implements View.OnClickListener{
     private String mParam1;
     private String mParam2;
 
-    private Button alta, mostrar;
-    private FragmentManager fm;
-    private FragmentTransaction ft;
-
     private OnFragmentInteractionListener mListener;
 
-    public Opciones() {
+    private DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+    private ArrayList<Usuario> listadoUsuarios;
+    RecyclerView recyclerView;
+    Adaptador adaptador;
+
+    public MostrarUsuarios() {
         // Required empty public constructor
     }
 
@@ -46,11 +56,11 @@ public class Opciones extends Fragment implements View.OnClickListener{
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Opciones.
+     * @return A new instance of fragment MostrarUsuarios.
      */
     // TODO: Rename and change types and number of parameters
-    public static Opciones newInstance(String param1, String param2) {
-        Opciones fragment = new Opciones();
+    public static MostrarUsuarios newInstance(String param1, String param2) {
+        MostrarUsuarios fragment = new MostrarUsuarios();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,24 +75,45 @@ public class Opciones extends Fragment implements View.OnClickListener{
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+/*
+        bbdd.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                    Usuario u = datasnapshot.getValue(Usuario.class);
+                    listadoUsuarios.add(u);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        */
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.opciones, container, false);
+        View v = inflater.inflate(R.layout.mostrar_usuarios, container, false);
 
-        fm = getFragmentManager();
+        listadoUsuarios = new ArrayList<Usuario>();
 
-        alta = v.findViewById(R.id.btnAlta);
-        alta.setOnClickListener(this);
+        recyclerView = v.findViewById(R.id.listaUsuarios);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
-        mostrar = v.findViewById(R.id.btnMostrar);
-        mostrar.setOnClickListener(this);
+        Usuario u = new Usuario("pepito","pepito@ejemplo.com","Pepe","Ruiz","Albura");
+        listadoUsuarios.add(u);
+
+        adaptador = new Adaptador(listadoUsuarios);
+        recyclerView.setAdapter(adaptador);
         return v;
-    }
 
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -108,36 +139,6 @@ public class Opciones extends Fragment implements View.OnClickListener{
         mListener = null;
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.btnAlta:
-                ft = fm.beginTransaction();
-                if (mListener.estaFragmentDinamic()){
-                    ft.replace(R.id.fragment_dinamic,AltaUsuario.newInstance("",""));
-                    ft.addToBackStack(null);
-                } else {
-                    ft.add(R.id.fragment_dinamic,AltaUsuario.newInstance("",""));
-                    ft.addToBackStack(null);
-                }
-                ft.commit();
-                break;
-            case R.id.btnMostrar:
-                ft = fm.beginTransaction();
-                if (mListener.estaFragmentDinamic()){
-                    ft.replace(R.id.fragment_dinamic,MostrarUsuarios.newInstance("",""));
-                    ft.addToBackStack(null);
-                } else {
-                    ft.add(R.id.fragment_dinamic,MostrarUsuarios.newInstance("",""));
-                    ft.addToBackStack(null);
-                }
-                ft.commit();
-                break;
-            default:
-                break;
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -151,6 +152,5 @@ public class Opciones extends Fragment implements View.OnClickListener{
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-        boolean estaFragmentDinamic();
     }
 }

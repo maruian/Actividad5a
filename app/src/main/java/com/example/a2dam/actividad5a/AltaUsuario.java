@@ -4,9 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.a2dam.actividad5a.model.Usuario;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 /**
@@ -17,11 +25,15 @@ import android.view.ViewGroup;
  * Use the {@link AltaUsuario#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AltaUsuario extends Fragment {
+public class AltaUsuario extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private Button guardar;
+    private EditText text_usuario, text_correo, text_nombre, text_apellidos, text_direccion;
+    private DatabaseReference bbdd;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -64,7 +76,20 @@ public class AltaUsuario extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.alta_usuario, container, false);
+        View v = inflater.inflate(R.layout.alta_usuario, container, false);
+
+
+        text_usuario = v.findViewById(R.id.etNombreUsuario);
+        text_correo = v.findViewById(R.id.etCorreoElectronico);
+        text_nombre = v.findViewById(R.id.etNombre);
+        text_apellidos = v.findViewById(R.id.etApellidos);
+        text_direccion = v.findViewById(R.id.etDireccion);
+        guardar = v.findViewById(R.id.guardar);
+        bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+
+
+        guardar.setOnClickListener(this);
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -89,6 +114,39 @@ public class AltaUsuario extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.guardar:
+                String usuario = text_usuario.getText().toString();
+                String nombre = text_nombre.getText().toString();
+                String correo = text_correo.getText().toString();
+                String apellidos = text_apellidos.getText().toString();
+                String direccion = text_direccion.getText().toString();
+
+                if (!TextUtils.isEmpty(usuario)&&
+                        !TextUtils.isEmpty(nombre)&&
+                        !TextUtils.isEmpty(apellidos)&&
+                        !TextUtils.isEmpty(correo)&&
+                        !TextUtils.isEmpty(direccion)){
+                    Usuario u = new Usuario(usuario,correo,nombre,apellidos,direccion);
+
+                    //obtenim la clau
+                    String clave = bbdd.push().getKey();
+
+                    //creem el nou objecte
+                    bbdd.child(clave).setValue(u);
+                    Toast.makeText(getContext(),"Datos guardados",Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(getContext(),"Debes introducir datos correctos",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     /**

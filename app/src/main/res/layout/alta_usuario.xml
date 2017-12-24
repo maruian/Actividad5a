@@ -30,7 +30,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/correoElectronico"/>
+        android:id="@+id/etCorreoElectronico"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,6 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_gravity="right"
-        android:text="Guardar"/>
+        android:text="Guardar"
+        android:id="@+id/guardar"/>
 
 </LinearLayout>
