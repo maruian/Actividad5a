@@ -41,7 +41,7 @@ public class MostrarUsuarios extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+    private DatabaseReference bbdd;
     private ArrayList<Usuario> listadoUsuarios;
     RecyclerView recyclerView;
     Adaptador adaptador;
@@ -75,24 +75,6 @@ public class MostrarUsuarios extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-/*
-        bbdd.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
-                    Usuario u = datasnapshot.getValue(Usuario.class);
-                    listadoUsuarios.add(u);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        */
     }
 
     @Override
@@ -106,11 +88,30 @@ public class MostrarUsuarios extends Fragment {
         recyclerView = v.findViewById(R.id.listaUsuarios);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
-        Usuario u = new Usuario("pepito","pepito@ejemplo.com","Pepe","Ruiz","Albura");
-        listadoUsuarios.add(u);
+        bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+        bbdd.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-        adaptador = new Adaptador(listadoUsuarios);
-        recyclerView.setAdapter(adaptador);
+                for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                    Usuario u = datasnapshot.getValue(Usuario.class);
+                  listadoUsuarios.add(u);
+                }
+
+                //Estes linees les tinc que ficar aci dins
+                //Si les fique fora no m'agafa les dadaes
+
+                adaptador = new Adaptador(listadoUsuarios);
+                recyclerView.setAdapter(adaptador);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
         return v;
 
     }
