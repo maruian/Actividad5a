@@ -33,7 +33,7 @@ public class AltaUsuario extends Fragment implements View.OnClickListener {
 
     private Button guardar;
     private EditText text_usuario, text_correo, text_nombre, text_apellidos, text_direccion;
-    private DatabaseReference bbdd;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -85,7 +85,7 @@ public class AltaUsuario extends Fragment implements View.OnClickListener {
         text_apellidos = v.findViewById(R.id.etApellidos);
         text_direccion = v.findViewById(R.id.etDireccion);
         guardar = v.findViewById(R.id.guardar);
-        bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+
 
 
         guardar.setOnClickListener(this);
@@ -134,10 +134,10 @@ public class AltaUsuario extends Fragment implements View.OnClickListener {
                     Usuario u = new Usuario(usuario,correo,nombre,apellidos,direccion);
 
                     //obtenim la clau
-                    String clave = bbdd.push().getKey();
+                    String clave = MainActivity.bbdd.push().getKey();
 
                     //creem el nou objecte
-                    bbdd.child(clave).setValue(u);
+                    MainActivity.bbdd.child(clave).setValue(u);
                     Toast.makeText(getContext(),"Datos guardados",Toast.LENGTH_SHORT).show();
 
                 } else {

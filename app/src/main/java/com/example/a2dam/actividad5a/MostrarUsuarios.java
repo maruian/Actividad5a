@@ -41,7 +41,6 @@ public class MostrarUsuarios extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private DatabaseReference bbdd;
     private ArrayList<Usuario> listadoUsuarios;
     RecyclerView recyclerView;
     Adaptador adaptador;
@@ -88,19 +87,17 @@ public class MostrarUsuarios extends Fragment {
         recyclerView = v.findViewById(R.id.listaUsuarios);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
-        bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
-        bbdd.addValueEventListener(new ValueEventListener() {
+        MainActivity.bbdd.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
                     Usuario u = datasnapshot.getValue(Usuario.class);
-                  listadoUsuarios.add(u);
+                    listadoUsuarios.add(u);
                 }
 
                 //Estes linees les tinc que ficar aci dins
                 //Si les fique fora no m'agafa les dadaes
-
                 adaptador = new Adaptador(listadoUsuarios);
                 recyclerView.setAdapter(adaptador);
             }
@@ -110,7 +107,6 @@ public class MostrarUsuarios extends Fragment {
 
             }
         });
-
 
         return v;
 
