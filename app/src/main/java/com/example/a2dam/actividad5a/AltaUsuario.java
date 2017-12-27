@@ -1,5 +1,8 @@
 package com.example.a2dam.actividad5a;
 
+
+import com.example.a2dam.actividad5a.model.Usuario;
+
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,9 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.a2dam.actividad5a.model.Usuario;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -118,36 +124,58 @@ public class AltaUsuario extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.guardar:
+
+                final DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+
                 String usuario = text_usuario.getText().toString();
                 String nombre = text_nombre.getText().toString();
                 String correo = text_correo.getText().toString();
                 String apellidos = text_apellidos.getText().toString();
                 String direccion = text_direccion.getText().toString();
 
-                if (!TextUtils.isEmpty(usuario)&&
-                        !TextUtils.isEmpty(nombre)&&
-                        !TextUtils.isEmpty(apellidos)&&
-                        !TextUtils.isEmpty(correo)&&
-                        !TextUtils.isEmpty(direccion)){
-                    Usuario u = new Usuario(usuario,correo,nombre,apellidos,direccion);
 
-                    //obtenim la clau
-                    String clave = MainActivity.bbdd.push().getKey();
+                if (!TextUtils.isEmpty(usuario) &&
+                        !TextUtils.isEmpty(nombre) &&
+                        !TextUtils.isEmpty(apellidos) &&
+                        !TextUtils.isEmpty(correo) &&
+                        !TextUtils.isEmpty(direccion)) {
+                    final Usuario u = new Usuario(usuario, correo, nombre, apellidos, direccion);
+                    //comprovem que no existeix eixe usuari
+                    //i si no existeix el donem d'alta
+                    final String clave = bbdd.push().getKey();
+                    Query q = bbdd.orderByChild("usuario").equalTo(u.getUsuario());
+                    q.addListenerForSingleValueEvent(new ValueEventListener() {
+                        int cont=0;
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                                cont++;
+                            }
+                            if (cont>0){
+                                Toast.makeText(getContext(), "Este usuario ya existe, elige otro usuario", Toast.LENGTH_SHORT).show();
+                            } else {
+                                bbdd.child(clave).setValue(u);
+                                Toast.makeText(getContext(), "Datos guardados", Toast.LENGTH_SHORT).show();
+                            }
+                        }
 
-                    //creem el nou objecte
-                    MainActivity.bbdd.child(clave).setValue(u);
-                    Toast.makeText(getContext(),"Datos guardados",Toast.LENGTH_SHORT).show();
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
 
                 } else {
-                    Toast.makeText(getContext(),"Debes introducir datos correctos",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Debes introducir datos correctos", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
                 break;
         }
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

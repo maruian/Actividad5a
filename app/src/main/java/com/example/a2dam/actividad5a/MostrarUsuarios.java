@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.a2dam.actividad5a.model.Usuario;
 import com.google.firebase.database.DataSnapshot;
@@ -41,7 +42,7 @@ public class MostrarUsuarios extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private ArrayList<Usuario> listadoUsuarios;
+    ArrayList<Usuario> listadoUsuarios = new ArrayList<>();
     RecyclerView recyclerView;
     Adaptador adaptador;
 
@@ -82,24 +83,20 @@ public class MostrarUsuarios extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.mostrar_usuarios, container, false);
 
-        listadoUsuarios = new ArrayList<Usuario>();
+        DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
 
         recyclerView = v.findViewById(R.id.listaUsuarios);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
-        MainActivity.bbdd.addValueEventListener(new ValueEventListener() {
+        bbdd.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot datasnapshot: dataSnapshot.getChildren()){
-                    Usuario u = datasnapshot.getValue(Usuario.class);
-                    listadoUsuarios.add(u);
+                for (DataSnapshot datasnapshot: dataSnapshot.getChildren()) {
+                    listadoUsuarios.add(datasnapshot.getValue(Usuario.class));
                 }
-
-                //Estes linees les tinc que ficar aci dins
-                //Si les fique fora no m'agafa les dadaes
                 adaptador = new Adaptador(listadoUsuarios);
                 recyclerView.setAdapter(adaptador);
+
             }
 
             @Override
