@@ -4,13 +4,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.a2dam.actividad5a.model.Usuario;
 import com.google.firebase.database.DataSnapshot;
@@ -84,6 +84,7 @@ public class MostrarUsuarios extends Fragment {
         View v = inflater.inflate(R.layout.mostrar_usuarios, container, false);
 
         DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+        final FragmentManager fm = getFragmentManager();
 
         recyclerView = v.findViewById(R.id.listaUsuarios);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
@@ -94,7 +95,7 @@ public class MostrarUsuarios extends Fragment {
                 for (DataSnapshot datasnapshot: dataSnapshot.getChildren()) {
                     listadoUsuarios.add(datasnapshot.getValue(Usuario.class));
                 }
-                adaptador = new Adaptador(listadoUsuarios);
+                adaptador = new Adaptador(listadoUsuarios, fm);
                 recyclerView.setAdapter(adaptador);
 
             }

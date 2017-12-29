@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity implements Opciones.OnFragmentInteractionListener, AltaUsuario.OnFragmentInteractionListener,
-MostrarUsuarios.OnFragmentInteractionListener{
+MostrarUsuarios.OnFragmentInteractionListener, EditarUsuari.OnFragmentInteractionListener{
 
     FragmentManager fm;
 

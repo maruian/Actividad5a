@@ -1,11 +1,18 @@
 package com.example.a2dam.actividad5a;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+
+
 
 import com.example.a2dam.actividad5a.model.Usuario;
 
@@ -18,11 +25,12 @@ import java.util.ArrayList;
 
 public class Adaptador extends RecyclerView.Adapter<Adaptador.ViewHolderAdaptador> {
 
-
     private ArrayList<Usuario>listadoUsuarios;
+    private FragmentManager fm;
 
-    public Adaptador(ArrayList<Usuario> listadoUsuarios){
+    public Adaptador(ArrayList<Usuario> listadoUsuarios, FragmentManager fm){
        this.listadoUsuarios=listadoUsuarios;
+       this.fm = fm;
     }
 
     @Override
@@ -31,6 +39,8 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.ViewHolderAdaptado
                 .inflate(R.layout.item_list,null,false);
         return new ViewHolderAdaptador(view);
     }
+
+
 
     @Override
     public void onBindViewHolder(ViewHolderAdaptador holder, int position) {
@@ -42,11 +52,12 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.ViewHolderAdaptado
         return listadoUsuarios.size();
     }
 
-    public class ViewHolderAdaptador extends RecyclerView.ViewHolder {
+    public class ViewHolderAdaptador extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView text_usuario, text_correo, text_nombre, text_apellidos, text_direccion;
 
         public ViewHolderAdaptador(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             text_usuario = (TextView)itemView.findViewById(R.id.usuario);
             text_correo = (TextView)itemView.findViewById(R.id.correo);
             text_nombre = (TextView)itemView.findViewById(R.id.nombre);
@@ -61,5 +72,22 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.ViewHolderAdaptado
             text_apellidos.setText(usuario.getApellidos());
             text_direccion.setText(usuario.getDireccion());
         }
+
+        @Override
+        public void onClick(View view) {
+            Context context = view.getContext();
+            int position = getAdapterPosition();
+
+
+            Usuario u = listadoUsuarios.get(position);
+            EditarUsuari editarUsuari = EditarUsuari.newInstance(u);
+
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_dinamic, editarUsuari);
+            ft.commit();
+            ft.addToBackStack(null);
+
+        }
+
     }
 }
