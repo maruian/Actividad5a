@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements Opciones.OnFragmentInteractionListener, AltaUsuario.OnFragmentInteractionListener,
 MostrarUsuarios.OnFragmentInteractionListener, EditarUsuari.OnFragmentInteractionListener{
@@ -16,6 +17,8 @@ MostrarUsuarios.OnFragmentInteractionListener, EditarUsuari.OnFragmentInteractio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fm = getSupportFragmentManager();
+        String usuario = getIntent().getStringExtra("USUARIO");
+        Toast.makeText(this,"Bienvenido "+usuario,Toast.LENGTH_SHORT).show();
     }
 
     @Override
