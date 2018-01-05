@@ -114,10 +114,10 @@ public class Opciones extends Fragment implements View.OnClickListener{
             case R.id.btnAlta:
                 ft = fm.beginTransaction();
                 if (mListener.estaFragmentDinamic()){
-                    ft.replace(R.id.fragment_dinamic,AltaUsuario.newInstance("",""));
+                    ft.replace(R.id.fragment_dinamic,AltaProducto.newInstance("",""));
                     ft.addToBackStack(null);
                 } else {
-                    ft.add(R.id.fragment_dinamic,AltaUsuario.newInstance("",""));
+                    ft.add(R.id.fragment_dinamic,AltaProducto.newInstance("",""));
                     ft.addToBackStack(null);
                 }
                 ft.commit();

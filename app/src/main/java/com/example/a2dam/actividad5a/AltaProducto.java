@@ -1,44 +1,42 @@
 package com.example.a2dam.actividad5a;
 
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.a2dam.actividad5a.model.Usuario;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.example.a2dam.actividad5a.model.Producto;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link AltaUsuario.OnFragmentInteractionListener} interface
+ * {@link AltaProducto.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AltaUsuario#newInstance} factory method to
+ * Use the {@link AltaProducto#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AltaUsuario extends Fragment implements View.OnClickListener{
+public class AltaProducto extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private Button guardar;
-    private EditText text_usuario, text_correo, text_nombre, text_apellidos, text_direccion;
-
+    private EditText text_nombre, text_descripcion, text_precio;
+    private Spinner spCategoria;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -46,7 +44,7 @@ public class AltaUsuario extends Fragment implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
 
-    public AltaUsuario() {
+    public AltaProducto() {
         // Required empty public constructor
     }
 
@@ -56,11 +54,11 @@ public class AltaUsuario extends Fragment implements View.OnClickListener{
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AltaUsuario.
+     * @return A new instance of fragment AltaProducto.
      */
     // TODO: Rename and change types and number of parameters
-    public static AltaUsuario newInstance(String param1, String param2) {
-        AltaUsuario fragment = new AltaUsuario();
+    public static AltaProducto newInstance(String param1, String param2) {
+        AltaProducto fragment = new AltaProducto();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -81,17 +79,13 @@ public class AltaUsuario extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.alta_usuario, container, false);
+        View v = inflater.inflate(R.layout.alta_producto, container, false);
 
-
-        text_usuario = v.findViewById(R.id.etNombreUsuario);
-        text_correo = v.findViewById(R.id.etCorreoElectronico);
-        text_nombre = v.findViewById(R.id.etNombre);
-        text_apellidos = v.findViewById(R.id.etApellidos);
-        text_direccion = v.findViewById(R.id.etDireccion);
+        text_nombre = v.findViewById(R.id.etNombreProducto);
+        text_descripcion = v.findViewById(R.id.etDescripcionProducto);
+        spCategoria = v.findViewById(R.id.spCategoria);
+        text_precio = v.findViewById(R.id.etPrecio);
         guardar = v.findViewById(R.id.guardar);
-
-
 
         guardar.setOnClickListener(this);
         return v;
@@ -125,46 +119,27 @@ public class AltaUsuario extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.guardar:
+                DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Productos");
 
-                final DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
-
-                String usuario = text_usuario.getText().toString();
                 String nombre = text_nombre.getText().toString();
-                String correo = text_correo.getText().toString();
-                String apellidos = text_apellidos.getText().toString();
-                String direccion = text_direccion.getText().toString();
+                String descripcion = text_descripcion.getText().toString();
+                String categoria = spCategoria.getSelectedItem().toString();
+                String precio = text_precio.getText().toString();
 
+                if (!TextUtils.isEmpty(nombre) &&
+                        !TextUtils.isEmpty(descripcion) &&
+                        !TextUtils.isEmpty(categoria) &&
+                        !TextUtils.isEmpty(precio)) {
+                    Log.d("HOLA","HOLA");
+                    Producto p = new Producto(nombre, descripcion, categoria, precio, FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                if (!TextUtils.isEmpty(usuario) &&
-                        !TextUtils.isEmpty(nombre) &&
-                        !TextUtils.isEmpty(apellidos) &&
-                        !TextUtils.isEmpty(correo) &&
-                        !TextUtils.isEmpty(direccion)) {
-                    final Usuario u = new Usuario(usuario, correo, nombre, apellidos, direccion,"");
-                    //comprovem que no existeix eixe usuari
-                    //i si no existeix el donem d'alta
-                    final String clave = bbdd.push().getKey();
-                    Query q = bbdd.orderByChild("usuario").equalTo(u.getUsuario());
-                    q.addListenerForSingleValueEvent(new ValueEventListener() {
-                        int cont=0;
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot datasnapshot: dataSnapshot.getChildren()){
-                                cont++;
-                            }
-                            if (cont>0){
-                                Toast.makeText(getContext(), "Este usuario ya existe, elige otro usuario", Toast.LENGTH_SHORT).show();
-                            } else {
-                                bbdd.child(clave).setValue(u);
-                                Toast.makeText(getContext(), "Datos guardados", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                    String clave = bbdd.push().getKey();
+                    bbdd.child(clave).setValue(p);
+                    Toast.makeText(getContext(), "Datos guardados", Toast.LENGTH_SHORT).show();
+                    text_nombre.setText("");
+                    text_descripcion.setText("");
+                    text_precio.setText("");
+                    spCategoria.setSelection(0);
 
                 } else {
                     Toast.makeText(getContext(), "Debes introducir datos correctos", Toast.LENGTH_SHORT).show();

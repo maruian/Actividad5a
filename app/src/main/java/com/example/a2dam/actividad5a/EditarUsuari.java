@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -39,7 +44,8 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
 
 
     private Button guardar, eliminar;
-    private EditText text_usuario, text_correo, text_nombre, text_apellidos, text_direccion;
+    private EditText text_nombre, text_apellidos, text_direccion;
+    private FirebaseAuth mAuth;
 
 
     // TODO: Rename and change types of parameters
@@ -80,22 +86,18 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.editar_usuari, container, false);
 
-        text_usuario = v.findViewById(R.id.etNombreUsuario);
-        text_correo = v.findViewById(R.id.etCorreoElectronico);
         text_nombre = v.findViewById(R.id.etNombre);
         text_apellidos = v.findViewById(R.id.etApellidos);
         text_direccion = v.findViewById(R.id.etDireccion);
 
-        text_usuario.setText(u.getUsuario());
-        text_correo.setText(u.getCorreo());
         text_nombre.setText(u.getNombre());
         text_apellidos.setText(u.getApellidos());
         text_direccion.setText(u.getDireccion());
 
-        text_usuario.setEnabled(false);
-
         guardar = v.findViewById(R.id.guardar);
         eliminar = v.findViewById(R.id.eliminar);
+
+        mAuth = FirebaseAuth.getInstance();
 
         guardar.setOnClickListener(this);
         eliminar.setOnClickListener(this);
@@ -131,7 +133,6 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
 
         final DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
         final String nombre = text_nombre.getText().toString();
-        final String correo = text_correo.getText().toString();
         final String apellidos = text_apellidos.getText().toString();
         final String direccion = text_direccion.getText().toString();
 
@@ -140,7 +141,6 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
 
                 if (!TextUtils.isEmpty(nombre) &&
                         !TextUtils.isEmpty(apellidos) &&
-                        !TextUtils.isEmpty(correo) &&
                         !TextUtils.isEmpty(direccion)) {
 
                     Query q = bbdd.orderByChild("usuario").equalTo(u.getUsuario());
@@ -151,13 +151,11 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
                             for (DataSnapshot datasnapshot: dataSnapshot.getChildren()){
                                 String clave = datasnapshot.getKey();
                                 bbdd.child(clave).child("nombre").setValue(nombre);
-                                bbdd.child(clave).child("correo").setValue(correo);
                                 bbdd.child(clave).child("apellidos").setValue(apellidos);
                                 bbdd.child(clave).child("direccion").setValue(direccion);
                             }
                             Toast.makeText(getContext(),"Datos modificados con exito",Toast.LENGTH_SHORT).show();
                             text_nombre.setEnabled(false);
-                            text_correo.setEnabled(false);
                             text_apellidos.setEnabled(false);
                             text_direccion.setEnabled(false);
                         }
@@ -185,6 +183,27 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
                             DatabaseReference ref = bbdd.child(clave);
                             ref.removeValue();
                         }
+                        String uid = mAuth.getUid();
+
+                        //també borrem els productes del usuari
+                        final DatabaseReference bbddProductos = FirebaseDatabase.getInstance().getReference("Productos");
+                        Query q = bbddProductos.orderByChild("usuario").equalTo(uid);
+                        q.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                                    String clave = datasnapshot.getKey();
+                                    DatabaseReference ref = bbddProductos.child(clave);
+                                    ref.removeValue();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                        mAuth.getCurrentUser().delete();
                         Toast.makeText(getContext(),"Usuario eliminado",Toast.LENGTH_SHORT).show();
                         getFragmentManager().beginTransaction().remove(EditarUsuari.this).commit();
                     }

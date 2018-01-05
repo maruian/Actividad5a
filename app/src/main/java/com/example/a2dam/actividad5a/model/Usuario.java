@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by 2dam on 18/12/2017.
+ * Created by Matias on 18/12/2017.
  */
 public class Usuario implements Parcelable {
     private String usuario;
@@ -12,17 +12,19 @@ public class Usuario implements Parcelable {
     private String nombre;
     private String apellidos;
     private String direccion;
+    private String uid;
 
     public Usuario(){
 
     }
 
-    public Usuario(String usuario, String correo, String nombre, String apellidos, String direccion) {
+    public Usuario(String usuario, String correo, String nombre, String apellidos, String direccion, String uid) {
         this.usuario = usuario;
         this.correo = correo;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.direccion = direccion;
+        this.uid = uid;
     }
 
     public String getUsuario() {
@@ -65,12 +67,17 @@ public class Usuario implements Parcelable {
         this.direccion = direccion;
     }
 
+    public String getUid() { return uid; }
+
+    public void setUid(String uid) { this.uid = uid; }
+
     protected Usuario(Parcel in) {
         usuario = in.readString();
         correo = in.readString();
         nombre = in.readString();
         apellidos = in.readString();
         direccion = in.readString();
+        uid = in.readString();
     }
 
     @Override
@@ -85,6 +92,7 @@ public class Usuario implements Parcelable {
         dest.writeString(nombre);
         dest.writeString(apellidos);
         dest.writeString(direccion);
+        dest.writeString(uid);
     }
 
     @SuppressWarnings("unused")

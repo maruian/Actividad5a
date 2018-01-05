@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements Opciones.OnFragmentInteractionListener, AltaUsuario.OnFragmentInteractionListener,
-MostrarUsuarios.OnFragmentInteractionListener, EditarUsuari.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements Opciones.OnFragmentInteractionListener, AltaProducto.OnFragmentInteractionListener,
+MostrarUsuarios.OnFragmentInteractionListener, EditarUsuari.OnFragmentInteractionListener, AltaUsuario.OnFragmentInteractionListener{
 
     FragmentManager fm;
 
