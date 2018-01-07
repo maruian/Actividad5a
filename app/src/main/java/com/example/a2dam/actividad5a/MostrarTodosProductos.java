@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 
 import com.example.a2dam.actividad5a.model.Producto;
@@ -55,6 +56,7 @@ public class MostrarTodosProductos extends Fragment {
 
     private Spinner spCategoria, spUsuarios;
     private ImageView filtrarCategoria, filtrarUsuario;
+    private TextView quitarFiltros;
 
 
 
@@ -101,6 +103,7 @@ public class MostrarTodosProductos extends Fragment {
         spCategoria = v.findViewById(R.id.spCategoria);
         filtrarCategoria = v.findViewById(R.id.filtrarCategoria);
         filtrarUsuario = v.findViewById(R.id.filtrarUsuario);
+        quitarFiltros = v.findViewById(R.id.quitarFiltros);
 
 
         //Obtenim el llistat de tots els usuaris
@@ -190,6 +193,14 @@ public class MostrarTodosProductos extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        quitarFiltros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listadoUsuarios.clear();
+                fm.beginTransaction().detach(MostrarTodosProductos.this).attach(MostrarTodosProductos.this).commit();
             }
         });
 
