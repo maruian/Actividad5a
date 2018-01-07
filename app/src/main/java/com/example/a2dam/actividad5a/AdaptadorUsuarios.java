@@ -1,15 +1,12 @@
 package com.example.a2dam.actividad5a;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 
@@ -23,12 +20,12 @@ import java.util.ArrayList;
  * Created by admin on 24/12/2017.
  */
 
-public class Adaptador extends RecyclerView.Adapter<Adaptador.ViewHolderAdaptador> {
+public class AdaptadorUsuarios extends RecyclerView.Adapter<AdaptadorUsuarios.ViewHolderAdaptador> {
 
     private ArrayList<Usuario>listadoUsuarios;
     private FragmentManager fm;
 
-    public Adaptador(ArrayList<Usuario> listadoUsuarios, FragmentManager fm){
+    public AdaptadorUsuarios(ArrayList<Usuario> listadoUsuarios, FragmentManager fm){
        this.listadoUsuarios=listadoUsuarios;
        this.fm = fm;
     }
@@ -36,7 +33,7 @@ public class Adaptador extends RecyclerView.Adapter<Adaptador.ViewHolderAdaptado
     @Override
     public ViewHolderAdaptador onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_list,null,false);
+                .inflate(R.layout.item_list_usuario,null,false);
         return new ViewHolderAdaptador(view);
     }
 

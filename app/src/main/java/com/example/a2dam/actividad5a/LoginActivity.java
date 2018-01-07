@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.a2dam.actividad5a.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -19,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
 
-    FirebaseAuth firebaseAuth;
+    public static FirebaseAuth firebaseAuth;
     Button entrar, registrar;
     EditText usuario, password;
 
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         FirebaseUser user = firebaseAuth.getCurrentUser();
-                                        Toast.makeText(getApplicationContext(), "Signin successful " + user.getUid(), Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getApplicationContext(), "Signin successful " + user.getUid(), Toast.LENGTH_SHORT).show();
                                         explicit_intent.putExtra("USUARIO", usuario.getText().toString());
                                         startActivity(explicit_intent);
                                     } else {

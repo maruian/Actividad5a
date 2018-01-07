@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,22 +118,34 @@ public class AltaProducto extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.guardar:
-                DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Productos");
+                DatabaseReference databaseReferenceProductos = FirebaseDatabase.getInstance().getReference("Productos");
+                DatabaseReference databaseReferenceProductosXUsuario = FirebaseDatabase.getInstance().getReference("ProductosXUsuario");
+                DatabaseReference databaseReferenceProductosXCategoria = FirebaseDatabase.getInstance().getReference("ProductosXCategoria");
 
                 String nombre = text_nombre.getText().toString();
                 String descripcion = text_descripcion.getText().toString();
                 String categoria = spCategoria.getSelectedItem().toString();
                 String precio = text_precio.getText().toString();
+                String uid = MainActivity.usuarioSesion.getUid();
+                String usuario = MainActivity.usuarioSesion.getUsuario();
 
                 if (!TextUtils.isEmpty(nombre) &&
                         !TextUtils.isEmpty(descripcion) &&
                         !TextUtils.isEmpty(categoria) &&
                         !TextUtils.isEmpty(precio)) {
-                    Log.d("HOLA","HOLA");
-                    Producto p = new Producto(nombre, descripcion, categoria, precio, FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                    String clave = bbdd.push().getKey();
-                    bbdd.child(clave).setValue(p);
+                    String claveProducto = databaseReferenceProductos.push().getKey();
+
+                    Producto p = new Producto(nombre, descripcion, categoria, precio, uid, usuario, claveProducto);
+
+                    databaseReferenceProductos.child(claveProducto).setValue(p);
+
+                    // modificacion
+                    // databaseReferenceProductosXUsuario.child(MainActivity.usuarioSesion.getUid()).child(claveProducto).setValue(p);
+                    databaseReferenceProductosXUsuario.child(MainActivity.usuarioSesion.getUsuario()).child(claveProducto).setValue(p);
+
+                    databaseReferenceProductosXCategoria.child(p.getCategoria()).child(claveProducto).setValue(p);
+
                     Toast.makeText(getContext(), "Datos guardados", Toast.LENGTH_SHORT).show();
                     text_nombre.setText("");
                     text_descripcion.setText("");

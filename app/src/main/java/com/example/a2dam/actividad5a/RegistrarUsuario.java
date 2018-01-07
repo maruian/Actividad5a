@@ -78,7 +78,6 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
 
                 //comprovem que no existeix eixe usuari
                 //i si no existeix el donem d'alta
-                final String clave = bbdd.push().getKey();
                 Query q = bbdd.orderByChild("usuario").equalTo(txt_usuario);
                 q.addListenerForSingleValueEvent(new ValueEventListener() {
                     int cont = 0;
@@ -98,8 +97,9 @@ public class RegistrarUsuario extends AppCompatActivity implements View.OnClickL
                                         @Override
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
+                                                String clave = bbdd.push().getKey();
                                                 String uid = firebaseAuth.getCurrentUser().getUid();
-                                                Usuario u = new Usuario(txt_usuario, txt_correo, txt_nombre, txt_apellidos, txt_direccion, uid);
+                                                Usuario u = new Usuario(txt_usuario, txt_correo, txt_nombre, txt_apellidos, txt_direccion, uid, clave);
                                                 bbdd.child(clave).setValue(u);
                                                 Toast.makeText(getApplicationContext(), "Registro completo", Toast.LENGTH_SHORT).show();
 

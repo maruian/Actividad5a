@@ -30,7 +30,7 @@ public class Opciones extends Fragment implements View.OnClickListener{
     private String mParam1;
     private String mParam2;
 
-    private Button alta, mostrar;
+    private TextView alta, mostrar, mostrarTodos, salir;
     private FragmentManager fm;
     private FragmentTransaction ft;
 
@@ -80,6 +80,13 @@ public class Opciones extends Fragment implements View.OnClickListener{
 
         mostrar = v.findViewById(R.id.btnMostrar);
         mostrar.setOnClickListener(this);
+
+        mostrarTodos = v.findViewById(R.id.btnMostrarTodos);
+        mostrarTodos.setOnClickListener(this);
+
+        salir = v.findViewById(R.id.btnSalir);
+        salir.setOnClickListener(this);
+
         return v;
     }
 
@@ -125,14 +132,34 @@ public class Opciones extends Fragment implements View.OnClickListener{
             case R.id.btnMostrar:
                 ft = fm.beginTransaction();
                 if (mListener.estaFragmentDinamic()){
-                    ft.replace(R.id.fragment_dinamic,MostrarUsuarios.newInstance("",""));
+                    // ft.replace(R.id.fragment_dinamic,MostrarUsuarios.newInstance("",""));
+                    ft.replace(R.id.fragment_dinamic,MostrarProductos.newInstance("",""));
                     ft.addToBackStack(null);
                 } else {
-                    ft.add(R.id.fragment_dinamic,MostrarUsuarios.newInstance("",""));
+                    // ft.add(R.id.fragment_dinamic,MostrarUsuarios.newInstance("",""));
+                    ft.add(R.id.fragment_dinamic,MostrarProductos.newInstance("",""));
                     ft.addToBackStack(null);
                 }
                 ft.commit();
                 break;
+            case R.id.btnMostrarTodos:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,MostrarTodosProductos.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,MostrarTodosProductos.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                break;
+
+            case R.id.btnSalir:
+                LoginActivity.firebaseAuth.signOut();
+                getActivity().finish();
+                break;
+
+
             default:
                 break;
         }

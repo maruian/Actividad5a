@@ -21,6 +21,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+//Esta clase no la estic utilitzant
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -140,7 +142,7 @@ public class AltaUsuario extends Fragment implements View.OnClickListener{
                         !TextUtils.isEmpty(apellidos) &&
                         !TextUtils.isEmpty(correo) &&
                         !TextUtils.isEmpty(direccion)) {
-                    final Usuario u = new Usuario(usuario, correo, nombre, apellidos, direccion,"");
+                    final Usuario u = new Usuario(usuario, correo, nombre, apellidos, direccion,"","");
                     //comprovem que no existeix eixe usuari
                     //i si no existeix el donem d'alta
                     final String clave = bbdd.push().getKey();

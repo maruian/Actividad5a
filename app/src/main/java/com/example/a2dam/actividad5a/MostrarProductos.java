@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.a2dam.actividad5a.model.Usuario;
+import com.example.a2dam.actividad5a.model.Producto;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
 
 
 /**
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  * Use the {@link MostrarUsuarios#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MostrarUsuarios extends Fragment {
+public class MostrarProductos extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -42,11 +43,11 @@ public class MostrarUsuarios extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    ArrayList<Usuario> listadoUsuarios = new ArrayList<>();
+    ArrayList<Producto> listadoProductos = new ArrayList<>();
     RecyclerView recyclerView;
-    AdaptadorUsuarios adaptadorUsuarios;
+    AdaptadorProductos adaptadorProductos;
 
-    public MostrarUsuarios() {
+    public MostrarProductos() {
         // Required empty public constructor
     }
 
@@ -59,8 +60,8 @@ public class MostrarUsuarios extends Fragment {
      * @return A new instance of fragment MostrarUsuarios.
      */
     // TODO: Rename and change types and number of parameters
-    public static MostrarUsuarios newInstance(String param1, String param2) {
-        MostrarUsuarios fragment = new MostrarUsuarios();
+    public static MostrarProductos newInstance(String param1, String param2) {
+        MostrarProductos fragment = new MostrarProductos();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -81,23 +82,24 @@ public class MostrarUsuarios extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.mostrar_usuarios, container, false);
-
-        DatabaseReference bbdd = FirebaseDatabase.getInstance().getReference("Usuarios");
+        View v = inflater.inflate(R.layout.mostrar_productos, container, false);
 
 
-        recyclerView = v.findViewById(R.id.listaUsuarios);
+        DatabaseReference dbProductosXUsuario = FirebaseDatabase.getInstance().getReference("ProductosXUsuario/"+MainActivity.usuarioSesion.getUsuario());
+
+        recyclerView = v.findViewById(R.id.listaProductos);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
-        bbdd.addListenerForSingleValueEvent(new ValueEventListener() {
+        dbProductosXUsuario.addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot datasnapshot: dataSnapshot.getChildren()) {
-                    listadoUsuarios.add(datasnapshot.getValue(Usuario.class));
+                    listadoProductos.add(datasnapshot.getValue(Producto.class));
                 }
                 FragmentManager fm = getFragmentManager();
-                adaptadorUsuarios = new AdaptadorUsuarios(listadoUsuarios, fm);
-                recyclerView.setAdapter(adaptadorUsuarios);
+                adaptadorProductos = new AdaptadorProductos(listadoProductos, fm);
+                recyclerView.setAdapter(adaptadorProductos);
 
             }
 

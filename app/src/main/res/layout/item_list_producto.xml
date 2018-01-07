@@ -2,61 +2,61 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/holo_blue_light"
+    android:background="@android:color/holo_orange_light"
     android:orientation="horizontal"
     android:padding="10dp">
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:layout_weight="0.7"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/usuario"
+            android:id="@+id/nombreProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Usuario 1"
+            android:hint="Producto 1"
             android:textColor="@android:color/white"
             android:textSize="16dp" />
 
         <TextView
-            android:id="@+id/correo"
+            android:id="@+id/descripcionProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="correo@ejemplo.com"
+            android:hint="Descripcion Producto 1"
+            android:layout_marginTop="10dp"
             android:textColor="@android:color/white" />
 
         <TextView
-            android:id="@+id/nombre"
+            android:id="@+id/categoriaProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre"
+            android:hint="Categoria"
             android:textColor="@android:color/white" />
 
         <TextView
-            android:id="@+id/apellidos"
+            android:id="@+id/precioProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Apellidos"
+            android:hint="precio"
             android:textColor="@android:color/white" />
 
         <TextView
-            android:id="@+id/direccion"
+            android:id="@+id/usuarioProducto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="C/. Ejemplo, 1"
+            android:hint="Usuario"
             android:textColor="@android:color/white" />
 
     </LinearLayout>
 
-
     <ImageView
-        android:layout_weight="0.3"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:contentDescription="avatar"
-        android:src="@mipmap/avatar2"></ImageView>
+        android:layout_weight="0.3"
+        android:layout_height="match_parent"
+        android:contentDescription="product"
+        android:src="@mipmap/product"></ImageView>
 
 
 </LinearLayout>
