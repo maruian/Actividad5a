@@ -48,8 +48,11 @@ public class ModificarProducto extends Fragment implements View.OnClickListener 
     private Button guardar, eliminar;
     private Spinner spinner_categoria;
     private EditText text_nombre, text_descripcion, text_precio;
-    private FirebaseAuth mAuth;
 
+    //Definim les referencies a la base de dades
+    DatabaseReference dbProductos;
+    DatabaseReference dbProductosXUsuario;
+    DatabaseReference dbProductosXCategoria;
 
     // TODO: Rename and change types of parameters
     private Producto p;
@@ -70,7 +73,7 @@ public class ModificarProducto extends Fragment implements View.OnClickListener 
     public static ModificarProducto newInstance(Producto producto) {
         ModificarProducto fragment = new ModificarProducto();
         Bundle args = new Bundle();
-        args.putParcelable(CLAVE,producto);
+        args.putParcelable(CLAVE, producto);
         fragment.setArguments(args);
         return fragment;
     }
@@ -110,10 +113,14 @@ public class ModificarProducto extends Fragment implements View.OnClickListener 
         guardar = v.findViewById(R.id.guardar);
         eliminar = v.findViewById(R.id.eliminar);
 
-        mAuth = FirebaseAuth.getInstance();
-
         guardar.setOnClickListener(this);
         eliminar.setOnClickListener(this);
+
+        //Instanciem les referencies a la base de dades
+        dbProductos = FirebaseDatabase.getInstance().getReference("Productos/"+p.getKey());
+        dbProductosXCategoria = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/"+p.getCategoria()+"/"+p.getKey());
+        dbProductosXUsuario = FirebaseDatabase.getInstance().getReference("ProductosXUsuario/"+MainActivity.usuarioSesion.getUsuario()+"/"+p.getKey());
+
         return v;
     }
 
@@ -143,44 +150,12 @@ public class ModificarProducto extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-
-        DatabaseReference dbProductos = FirebaseDatabase.getInstance().getReference("Productos/"+p.getKey());
-        // modificacio
-        // DatabaseReference dbProductosXUsuario = FirebaseDatabase.getInstance().getReference("ProductosXUsuario/"+MainActivity.usuarioSesion.getUid()+"/"+p.getKey());
-        DatabaseReference dbProductosXUsuario = FirebaseDatabase.getInstance().getReference("ProductosXUsuario/"+MainActivity.usuarioSesion.getUsuario()+"/"+p.getKey());
-
-        DatabaseReference dbProductosXCategoria = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/"+p.getCategoria()+"/"+p.getKey());
-        String nombre = text_nombre.getText().toString();
-        String descripcion = text_descripcion.getText().toString();
-        String categoria = spinner_categoria.getSelectedItem().toString();
-        String precio = text_precio.getText().toString();
-
         switch (view.getId()) {
             case R.id.guardar:
-                if (!TextUtils.isEmpty(nombre) &&
-                        !TextUtils.isEmpty(descripcion) &&
-                        !TextUtils.isEmpty(precio)) {
-                    p.setNombre(nombre);
-                    p.setDescripcion(descripcion);
-                    p.setCategoria(categoria);
-                    p.setPrecio(precio);
-
-                    dbProductos.setValue(p);
-                    dbProductosXUsuario.setValue(p);
-                    dbProductosXCategoria.removeValue();
-                    dbProductosXCategoria = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/"+p.getCategoria()+"/"+p.getKey());
-                    dbProductosXCategoria.setValue(p);
-
-                    Toast.makeText(getContext(),"Producto modificado",Toast.LENGTH_SHORT).show();
-                    getFragmentManager().beginTransaction().remove(ModificarProducto.this).commit();
-                }
-
+                guardarProducto();
                 break;
             case R.id.eliminar:
-                dbProductos.removeValue();
-                dbProductosXUsuario.removeValue();
-                dbProductosXCategoria.removeValue();
-                getFragmentManager().beginTransaction().remove(ModificarProducto.this).commit();
+                eliminarProducto();
                 break;
             default:
                 break;
@@ -201,5 +176,40 @@ public class ModificarProducto extends Fragment implements View.OnClickListener 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void guardarProducto(){
+        String nombre = text_nombre.getText().toString();
+        String descripcion = text_descripcion.getText().toString();
+        String categoria = spinner_categoria.getSelectedItem().toString();
+        String precio = text_precio.getText().toString();
+        if (!TextUtils.isEmpty(nombre) &&
+                !TextUtils.isEmpty(descripcion) &&
+                !TextUtils.isEmpty(precio)) {
+            p.setNombre(nombre);
+            p.setDescripcion(descripcion);
+            p.setCategoria(categoria);
+            p.setPrecio(precio);
+
+            dbProductos.setValue(p);
+            dbProductosXUsuario.setValue(p);
+            dbProductosXCategoria.removeValue();
+            dbProductosXCategoria = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/"+p.getCategoria()+"/"+p.getKey());
+            dbProductosXCategoria.setValue(p);
+
+            Toast.makeText(getContext(),"Producto modificado",Toast.LENGTH_SHORT).show();
+            // Fem desapareixer el fragment
+            getFragmentManager().beginTransaction().remove(ModificarProducto.this).commit();
+        } else {
+            Toast.makeText(getContext(),"Introduce datos validos",Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void eliminarProducto() {
+        dbProductos.removeValue();
+        dbProductosXUsuario.removeValue();
+        dbProductosXCategoria.removeValue();
+        getFragmentManager().beginTransaction().remove(ModificarProducto.this).commit();
     }
 }

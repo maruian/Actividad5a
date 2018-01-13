@@ -1,5 +1,7 @@
 package com.example.a2dam.actividad5a;
 
+// Aquesta clase ja no la utilitzem en el projecte final
+
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;

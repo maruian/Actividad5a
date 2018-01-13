@@ -105,6 +105,8 @@ public class MostrarTodosProductos extends Fragment {
         filtrarUsuario = v.findViewById(R.id.filtrarUsuario);
         quitarFiltros = v.findViewById(R.id.quitarFiltros);
 
+        recyclerView = v.findViewById(R.id.listaProductos);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
 
         //Obtenim el llistat de tots els usuaris
         DatabaseReference dbUsuarios = FirebaseDatabase.getInstance().getReference("Usuarios");
@@ -124,10 +126,13 @@ public class MostrarTodosProductos extends Fragment {
             }
         });
 
+        //Afegim un listener a la imatge filtrar per categoria
         filtrarCategoria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final DatabaseReference dbProductosXCategoria = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/"+spCategoria.getSelectedItem().toString());
+                //primer neteje el llistat de productes perque sino cada volta que fem click al listener
+                //s'afegixen repetits al llistat
                 listadoProductos.clear();
                 dbProductosXCategoria.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -148,6 +153,7 @@ public class MostrarTodosProductos extends Fragment {
             }
         });
 
+        //Afegim un listener a la imatge de filtrar usuari
         filtrarUsuario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,14 +178,9 @@ public class MostrarTodosProductos extends Fragment {
             }
         });
 
-
-
+        // Mostrem el llistat inicial de productes
         DatabaseReference dbProductos = FirebaseDatabase.getInstance().getReference("Productos");
-        recyclerView = v.findViewById(R.id.listaProductos);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-
         dbProductos.addListenerForSingleValueEvent(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot datasnapshot: dataSnapshot.getChildren()) {

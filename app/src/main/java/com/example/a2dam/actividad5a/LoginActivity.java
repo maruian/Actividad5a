@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.a2dam.actividad5a.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -41,38 +40,48 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        final Intent explicit_intent;
         switch (view.getId()){
             case R.id.btnEntrar:
-                explicit_intent = new Intent(this, MainActivity.class);
-                if (!TextUtils.isEmpty(usuario.getText())&&
-                        (!TextUtils.isEmpty(password.getText()))){
-                    firebaseAuth = FirebaseAuth.getInstance();
-                    firebaseAuth.signInWithEmailAndPassword(usuario.getText().toString(),password.getText().toString()).
-                            addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                                        //Toast.makeText(getApplicationContext(), "Signin successful " + user.getUid(), Toast.LENGTH_SHORT).show();
-                                        explicit_intent.putExtra("USUARIO", usuario.getText().toString());
-                                        startActivity(explicit_intent);
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Sigin failed", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+
+                String usuario_texto = usuario.getText().toString();
+                String password_texto = password.getText().toString();
+
+                if (!TextUtils.isEmpty(usuario_texto)&&
+                        (!TextUtils.isEmpty(password_texto))){
+                        autenticarUsuario(usuario_texto, password_texto);
                 } else {
-                    Toast.makeText(this,"Debes introducir un nombre y una contraseña",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this,"Debes introducir un nombre y una contraseña",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btnRegistrar:
-                explicit_intent = new Intent(this,RegistrarUsuario.class);
-                startActivity(explicit_intent);
+                registrarUsuario();
                 break;
             default:
                 break;
         }
 
     }
+
+    private void autenticarUsuario(final String usuario, String password){
+        final Intent explicit_intent = new Intent(this, MainActivity.class);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInWithEmailAndPassword(usuario,password).
+                addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            explicit_intent.putExtra("USUARIO", usuario);
+                            startActivity(explicit_intent);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "No se ha podido iniciar sesion", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void registrarUsuario(){
+        Intent explicit_intent = new Intent(this,RegistrarUsuario.class);
+        startActivity(explicit_intent);
+    }
+
 }

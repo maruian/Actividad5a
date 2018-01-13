@@ -4,9 +4,11 @@ package com.example.a2dam.actividad5a;
 import com.example.a2dam.actividad5a.model.Usuario;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,8 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -154,6 +154,9 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
                                 bbdd.child(clave).child("apellidos").setValue(apellidos);
                                 bbdd.child(clave).child("direccion").setValue(direccion);
                             }
+                            MainActivity.usuarioSesion.setNombre(nombre);
+                            MainActivity.usuarioSesion.setApellidos(apellidos);
+                            MainActivity.usuarioSesion.setDireccion(direccion);
                             Toast.makeText(getContext(),"Datos modificados con exito",Toast.LENGTH_SHORT).show();
                             text_nombre.setEnabled(false);
                             text_apellidos.setEnabled(false);
@@ -173,29 +176,112 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
 
             case R.id.eliminar:
 
-                Query q = bbdd.orderByChild("usuario").equalTo(u.getUsuario());
-                q.addListenerForSingleValueEvent(new ValueEventListener() {
+                //advertim al usuari
 
+                AlertDialog.Builder adBuilder1 = new AlertDialog.Builder(getContext());
+                adBuilder1.setMessage("Si eliminas tu cuenta todos los productos asociados desapareceran. ¿Seguro que quieres continuar?");
+                adBuilder1.setTitle("Advertencia!");
+                adBuilder1.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot datasnapshot: dataSnapshot.getChildren()){
-                            String clave = datasnapshot.getKey();
-                            DatabaseReference ref = bbdd.child(clave);
-                            ref.removeValue();
-                        }
-                        String uid = mAuth.getUid();
-
-                        //també borrem els productes del usuari
-                        final DatabaseReference bbddProductos = FirebaseDatabase.getInstance().getReference("Productos");
-                        Query q = bbddProductos.orderByChild("usuario").equalTo(uid);
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Query q = bbdd.orderByChild("usuario").equalTo(u.getUsuario());
                         q.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                            //borrem el usuari de la base de dades
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot datasnapshot: dataSnapshot.getChildren()){
+                                for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
                                     String clave = datasnapshot.getKey();
-                                    DatabaseReference ref = bbddProductos.child(clave);
+                                    DatabaseReference ref = bbdd.child(clave);
                                     ref.removeValue();
                                 }
+                                String uid = mAuth.getUid();
+
+                                //borrem els productes del usuari
+                                final DatabaseReference bbddProductos = FirebaseDatabase.getInstance().getReference("Productos");
+                                Query q = bbddProductos.orderByChild("uid").equalTo(uid);
+                                q.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                                            String clave = datasnapshot.getKey();
+                                            DatabaseReference ref = bbddProductos.child(clave);
+                                            ref.removeValue();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                final DatabaseReference bbddProductosXCategoriaHogar = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/Hogar");
+                                Query q1 = bbddProductosXCategoriaHogar.orderByChild("uid").equalTo(uid);
+                                q1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                                            String clave = datasnapshot.getKey();
+                                            DatabaseReference ref = bbddProductosXCategoriaHogar.child(clave);
+                                            ref.removeValue();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                final DatabaseReference bbddProductosXCategoriaTecnologia = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/Tecnologia");
+                                Query q2 = bbddProductosXCategoriaTecnologia.orderByChild("uid").equalTo(uid);
+                                q2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                                            String clave = datasnapshot.getKey();
+                                            DatabaseReference ref = bbddProductosXCategoriaTecnologia.child(clave);
+                                            ref.removeValue();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                final DatabaseReference bbddProductosXCategoriaCoches = FirebaseDatabase.getInstance().getReference("ProductosXCategoria/Coches");
+                                Query q3 = bbddProductosXCategoriaCoches.orderByChild("uid").equalTo(uid);
+                                q3.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot datasnapshot : dataSnapshot.getChildren()) {
+                                            String clave = datasnapshot.getKey();
+                                            DatabaseReference ref = bbddProductosXCategoriaCoches.child(clave);
+                                            ref.removeValue();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                                final DatabaseReference bbddProductosXUsuario = FirebaseDatabase.getInstance().getReference("ProductosXUsuario/" + MainActivity.usuarioSesion.getUsuario());
+                                bbddProductosXUsuario.removeValue();
+
+
+                                //borrem el usuari de firebase
+                                mAuth.getCurrentUser().delete();
+
+
+                                Toast.makeText(getContext(), "Usuario eliminado, esperemos que regreses pronto", Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
+
+
                             }
 
                             @Override
@@ -203,16 +289,16 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
 
                             }
                         });
-                        mAuth.getCurrentUser().delete();
-                        Toast.makeText(getContext(),"Usuario eliminado",Toast.LENGTH_SHORT).show();
-                        getFragmentManager().beginTransaction().remove(EditarUsuari.this).commit();
                     }
-
+                });
+                adBuilder1.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 });
+                AlertDialog alertDialog = adBuilder1.create();
+                alertDialog.show();
 
 
             default:
