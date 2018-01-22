@@ -195,7 +195,7 @@ public class EditarUsuari extends Fragment implements View.OnClickListener {
                                     DatabaseReference ref = bbdd.child(clave);
                                     ref.removeValue();
                                 }
-                                String uid = mAuth.getUid();
+                                String uid = mAuth.getCurrentUser().getUid();
 
                                 //borrem els productes del usuari
                                 final DatabaseReference bbddProductos = FirebaseDatabase.getInstance().getReference("Productos");

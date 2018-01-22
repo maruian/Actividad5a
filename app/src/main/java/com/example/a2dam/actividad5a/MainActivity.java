@@ -21,7 +21,8 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements Opciones.OnFragmentInteractionListener, AltaProducto.OnFragmentInteractionListener,
 MostrarUsuarios.OnFragmentInteractionListener, EditarUsuari.OnFragmentInteractionListener, AltaUsuario.OnFragmentInteractionListener,
-        MostrarProductos.OnFragmentInteractionListener, ModificarProducto.OnFragmentInteractionListener, MostrarTodosProductos.OnFragmentInteractionListener{
+        MostrarProductos.OnFragmentInteractionListener, ModificarProducto.OnFragmentInteractionListener,
+        MostrarTodosProductos.OnFragmentInteractionListener, MostrarProductosFavoritos.OnFragmentInteractionListener{
 
 
     public static Usuario usuarioSesion;

@@ -81,7 +81,6 @@ public class AdaptadorProductos extends RecyclerView.Adapter<AdaptadorProductos.
             ft.replace(R.id.fragment_dinamic, modificarProducto);
             ft.commit();
             ft.addToBackStack(null);
-
         }
     }
 }
